@@ -11,6 +11,18 @@
 Пример: ветка `feat/dev-123_filter` → коммит `dev-123 | добавил фильтр по типу`.
 
 ---
+**./shell/simple/check_branch_name.sh**
+
+Пример shell-скрипта, который проверяет, что текущая ветка Git соответствует заданной структуре "^(feature|bugfix|hotfix|release)\/[a-zA-Z0-9]+_[a-zA-Z0-9_-]+$".
+
+### Docker compose
+---
+**./shell/docker/check_docker.sh**
+
+Проверка работы docker compose сборки (отключение, запуск, работа контейнеров).
+
+### Laravel
+---
 **./php/laravel/check_phpstan.sh**
 
 Проверка добавленных или изменённых файлов, через статический анализатор PHPStan.
