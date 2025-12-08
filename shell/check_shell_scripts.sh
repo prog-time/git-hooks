@@ -5,7 +5,7 @@ set -e
 # Configuration
 # -----------------------------------------
 DOCKER_SERVICE="app"
-PROJECT_DIR="/home/multichat"
+PROJECT_DIR="/home/project"
 
 # Directories to check (relative to PROJECT_DIR)
 DIRS=(
