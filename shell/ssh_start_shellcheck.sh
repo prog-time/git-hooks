@@ -5,8 +5,8 @@ set -e
 # SSH settings
 # -----------------------------------------
 SERVER_USER="root"
-SERVER_HOST="45.80.69.244"
-REMOTE_SCRIPT="/home/multichat/scripts/check_scripts/check_shell_scripts.sh"
+SERVER_HOST="12.34.56.789"
+REMOTE_SCRIPT="/home/project/scripts/check_scripts/check_shellcheck.sh"
 # -----------------------------------------
 
 # Connect to server and run the remote script
