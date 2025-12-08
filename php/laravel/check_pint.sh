@@ -3,6 +3,31 @@
 COMMAND="$1"
 
 # -----------------------------
+# Colors
+# -----------------------------
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# -----------------------------
+# Output helpers
+# -----------------------------
+info() {
+    echo -e "${BLUE}ℹ️  $1${NC}"
+}
+success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+# -----------------------------
 # Get list of PHP files to check
 # -----------------------------
 if [ "$COMMAND" = "commit" ]; then
@@ -11,13 +36,13 @@ elif [ "$COMMAND" = "push" ]; then
     BRANCH=$(git rev-parse --abbrev-ref HEAD)
     ALL_FILES=$(git diff --name-only origin/$BRANCH --diff-filter=ACM | grep '\.php$' || true)
 else
-    echo "Unknown command: $COMMAND"
+    warning "Unknown command: $COMMAND"
     exit 1
 fi
 
 # Exit if no PHP files found
 if [ -z "$ALL_FILES" ]; then
-  echo "✅ [Pint] No PHP files to check."
+  warning "[Pint] No PHP files to check."
   exit 0
 fi
 
