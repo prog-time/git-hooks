@@ -77,7 +77,7 @@ should_be_tested() {
     local classname="$1"
 
     for pattern in "${EXCLUDE_PATTERNS[@]}"; do
-        if [[ "$classname" == $pattern ]]; then
+        if [[ "$classname" == "$pattern" ]]; then
             return 1
         fi
 
@@ -125,7 +125,9 @@ find_test_classes() {
         if [[ -d "$path" ]]; then
             while IFS= read -r -d '' file; do
                 if [[ "$file" == *"Test.php" ]]; then
-                    local classname=$(extract_classname_from_file "$file")
+                    local classname
+                    classname=$(extract_classname_from_file "$file")
+
                     if [[ -n "$classname" ]]; then
                         test_classes+=("$classname")
                     fi
@@ -196,7 +198,8 @@ analyze_coverage() {
     local app_class="$1"
     local project_root="$2"
 
-    local normalized_classname=$(path_to_classname "$app_class")
+    local normalized_classname
+    normalized_classname=$(path_to_classname "$app_class")
 
     if ! should_be_tested "$normalized_classname"; then
         warning "Class does not require testing: $normalized_classname"
@@ -204,7 +207,8 @@ analyze_coverage() {
         return 0
     fi
 
-    local expected_test=$(get_expected_test_classname "$normalized_classname")
+    local expected_test
+    expected_test=$(get_expected_test_classname "$normalized_classname")
 
     # Load all test classes
     local test_classes_array=()
@@ -217,7 +221,6 @@ analyze_coverage() {
         echo "---"
         return 0
     else
-        local test_file_path=$(get_test_file_path "$expected_test" "$project_root")
         error "Please create test file: $expected_test"
         echo "---"
         return 1
@@ -241,13 +244,14 @@ main() {
     fi
 
     if [ -z "$ALL_FILES" ]; then
-      echo "✅ [FindTest] No tests required!"
+      warning " [FindTest] No tests required!"
       exit 0
     fi
 
     local status_analyze=1
     for app_class in $ALL_FILES; do
-        local project_root=$(find_project_root)
+        local project_root
+        project_root=$(find_project_root)
 
         if ! analyze_coverage "$app_class" "$project_root"; then
             status_analyze=0
