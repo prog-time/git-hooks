@@ -1,6 +1,31 @@
 #!/bin/bash
 
 # -----------------------------
+# Colors
+# -----------------------------
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+# -----------------------------
+# Output helpers
+# -----------------------------
+info() {
+    echo -e "${BLUE}ℹ️  $1${NC}"
+}
+success() {
+    echo -e "${GREEN}✅ $1${NC}"
+}
+warning() {
+    echo -e "${YELLOW}⚠️  $1${NC}"
+}
+error() {
+    echo -e "${RED}❌ $1${NC}"
+}
+
+# -----------------------------
 # CHECK NEW FILES
 # -----------------------------
 
@@ -16,7 +41,7 @@ if [ "$COMMAND" = "commit" ]; then
     FILTERED_FILES=$(echo "$NEW_FILES" | grep -v '/tests/' | grep -v 'Test\.php$')
 
     if [ -z "$FILTERED_FILES" ]; then
-        echo "✅ No new PHP files to check (or all are tests)"
+        warning "[PHPStan] No new PHP files to check (or all are tests)"
     else
         echo "🔍 Found new PHP files. Running PHPStan only on new files (excluding tests)"
         ./vendor/bin/phpstan analyse --no-progress --error-format=table $FILTERED_FILES
@@ -51,7 +76,7 @@ if [ ! -f "$BASELINE_FILE" ]; then
 fi
 
 if [ -z "$ALL_FILES" ]; then
-  echo "✅ [PHPStan] No PHP files to check."
+  warning "[PHPStan] No PHP files to check."
   exit 0
 fi
 
