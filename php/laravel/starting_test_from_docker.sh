@@ -3,7 +3,7 @@
 set -e
 
 COMPOSE_FILE="../docker-compose.yml"
-SERVICE_NAME="redcat_app"
+SERVICE_NAME="app"
 PROJECT_PATH="/var/www"
 
 # -----------------------------
