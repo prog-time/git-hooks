@@ -8,37 +8,12 @@ set -e
 # CONFIG
 # -----------------------------
 EXCLUDE_PATTERNS=(
-    "*Test" "*Search" "*Controller*" "*Console*" "*Jobs*"
-    "*Models*" "*Resources*" "*Requests*" "*DTO*" "*Dtos*"
-    "*Kernel*" "*Middleware*" "*config*" "*ValueObject*"
-    "*Enum*" "*Exception*" "*Migration*" "*Seeder*"
-    "*MockDto*" "*api*" "*Providers*" "*Abstract*"
+    "*Test" "*Controller*" "*Console*" 
+    "*Models*" "*Resources*" "*DTO*" "*Dtos*"
+    "*Kernel*" "*config*" "*ValueObject*"
+    "*Enum*" "*Exception*" "*migrations*" 
+    "*Mock*" "*resources*" "*Stubs*" "*TestCase*"
 )
-
-# -----------------------------
-# Colors
-# -----------------------------
-RED='\033[0;31m'
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-BLUE='\033[0;34m'
-NC='\033[0m' # No Color
-
-# -----------------------------
-# Output helpers
-# -----------------------------
-info() {
-    echo -e "${BLUE}ℹ️  $1${NC}"
-}
-success() {
-    echo -e "${GREEN}✅ $1${NC}"
-}
-warning() {
-    echo -e "${YELLOW}⚠️  $1${NC}"
-}
-error() {
-    echo -e "${RED}❌ $1${NC}"
-}
 
 # -----------------------------
 # Find project root
@@ -54,7 +29,7 @@ find_project_root() {
         current_dir=$(dirname "$current_dir")
     done
 
-    error "Laravel project root not found (composer.json missing)"
+    echo -e "❌ Laravel project root not found (composer.json missing)"
     exit 1
 }
 
@@ -77,11 +52,8 @@ should_be_tested() {
     local classname="$1"
 
     for pattern in "${EXCLUDE_PATTERNS[@]}"; do
-        if [[ "$classname" == "$pattern" ]]; then
-            return 1
-        fi
-
-        if [[ "$classname" == *"config"* ]]; then
+        # shellcheck disable=SC2053
+        if [[ "$classname" == $pattern ]]; then
             return 1
         fi
     done
@@ -109,16 +81,6 @@ find_test_classes() {
         "$project_root/tests/Unit"
         "$project_root/tests/Feature"
     )
-
-    # Добавляем модули
-    if [[ -d "$project_root/Modules" ]]; then
-        for module_dir in "$project_root/Modules"/*; do
-            if [[ -d "$module_dir" ]]; then
-                test_paths+=("$module_dir/Tests/Unit")
-                test_paths+=("$module_dir/Tests/Feature")
-            fi
-        done
-    fi
 
     # Collect test classes
     for path in "${test_paths[@]}"; do
@@ -151,10 +113,9 @@ extract_classname_from_file() {
     fi
 
     local namespace=""
-    local classname=""
-
     namespace=$(grep -m1 "^namespace " "$file" | sed 's/namespace \(.*\);/\1/' | tr -d ' ')
 
+    local classname=""
     classname=$(grep -m1 "^class " "$file" | sed 's/class \([a-zA-Z0-9_]*\).*/\1/')
 
     if [[ -n "$namespace" && -n "$classname" ]]; then
@@ -202,7 +163,7 @@ analyze_coverage() {
     normalized_classname=$(path_to_classname "$app_class")
 
     if ! should_be_tested "$normalized_classname"; then
-        warning "Class does not require testing: $normalized_classname"
+        echo -e "⚠️ Class does not require testing: $normalized_classname"
         echo "---"
         return 0
     fi
@@ -217,11 +178,11 @@ analyze_coverage() {
     done < <(find_test_classes "$project_root")
 
     if has_test "$normalized_classname" "$expected_test" "${test_classes_array[@]}"; then
-        success "Test found: $expected_test"
+        echo -e "✅ Test found: $expected_test"
         echo "---"
         return 0
     else
-        error "Please create test file: $expected_test"
+        ehco -e "❌ Please create test file: $expected_test"
         echo "---"
         return 1
     fi
@@ -244,7 +205,7 @@ main() {
     fi
 
     if [ -z "$ALL_FILES" ]; then
-      warning " [FindTest] No tests required!"
+      echo -e "⚠️ [FindTest] No tests required!"
       exit 0
     fi
 
