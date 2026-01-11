@@ -28,8 +28,7 @@ error() {
 # -----------------------------
 # CHECK NEW FILES
 # -----------------------------
-
-COMMAND="$1"  # either "commit" or "push"
+COMMAND="$1"
 
 if [ "$COMMAND" = "commit" ]; then
     # Only new files (status A = Added) ending with .php
@@ -55,7 +54,6 @@ fi
 # -----------------------------
 # CHECK MODIFIED FILES
 # -----------------------------
-
 BASELINE_FILE=".phpstan-error-count.json"
 BLOCK_COMMIT=0
 
@@ -115,9 +113,6 @@ if [ "$BLOCK_COMMIT" -eq 1 ]; then
     echo "⛔ Commit blocked. Reduce the number of errors compared to the previous version."
     exit 1
 fi
-
-# Reset baseline after a successful commit (optional)
-# jq -n '{}' > "$BASELINE_FILE"
 
 echo "✅ [PHPStan] Check completed successfully."
 
