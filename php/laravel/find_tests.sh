@@ -182,7 +182,7 @@ analyze_coverage() {
         echo "---"
         return 0
     else
-        ehco -e "❌ Please create test file: $expected_test"
+        echo -e "❌ Please create test file: $expected_test"
         echo "---"
         return 1
     fi
