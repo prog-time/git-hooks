@@ -1,4 +1,11 @@
 #!/bin/bash
+# ------------------------------------------------------------------------------
+# Validates current git branch name against naming convention.
+# Expected format: {type}/{task-id}_{description}
+# Allowed types: feature, bugfix, hotfix, release.
+# Example: feature/dev-2212_order_service
+# Fails if branch name does not match the required pattern.
+# ------------------------------------------------------------------------------
 
 # Получаем имя текущей ветки
 BRANCH_NAME=$(git rev-parse --abbrev-ref HEAD)
