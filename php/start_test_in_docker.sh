@@ -52,6 +52,7 @@ path_to_classname() {
 should_be_tested() {
     classname="$1"
     for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+        # shellcheck disable=SC2053 # Glob matching is intentional
         if [[ "$classname" == $pattern ]]; then
             return 1
         fi
@@ -62,26 +63,6 @@ should_be_tested() {
 get_expected_test_classname() {
     local classname="$1"
     echo "Tests\\Unit\\${classname}Test"
-}
-
-extract_classname_from_file() {
-    local file="$1"
-
-    if [[ ! -f "$file" ]]; then
-        return 1
-    fi
-
-    # Extract namespace
-    local namespace
-    namespace=$(grep -m1 "^namespace " "$file" | sed 's/namespace \(.*\);/\1/' | tr -d ' ')
-
-    # Extract class name
-    local classname
-    classname=$(grep -m1 "^class " "$file" | sed 's/class \([a-zA-Z0-9_]*\).*/\1/')
-
-    if [[ -n "$namespace" && -n "$classname" ]]; then
-        echo "${namespace}\\${classname}"
-    fi
 }
 
 find_test_class_path() {
@@ -117,9 +98,7 @@ run_test_for_class() {
     echo "Running test: $test_classname"
     echo "File: $classname"
 
-    docker compose -f "$COMPOSE_FILE" exec -T "$SERVICE_NAME" sh -c "cd $PROJECT_PATH && php artisan test --filter='$classname'"
-
-    if [[ $? -eq 0 ]]; then
+    if docker compose -f "$COMPOSE_FILE" exec -T "$SERVICE_NAME" sh -c "cd $PROJECT_PATH && php artisan test --filter='$classname'"; then
         echo "Test passed: $test_classname"
         return 0
     else

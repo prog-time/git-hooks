@@ -5,6 +5,7 @@
 # ------------------------------------------------------------------------------
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
 source "$SCRIPT_DIR/../../../lib/test_helper.bash"
 
 setup_test_env "phpstan_clean_file"

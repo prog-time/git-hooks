@@ -42,6 +42,7 @@ find_project_root() {
 should_be_tested() {
     local classname="$1"
     for pattern in "${EXCLUDE_PATTERNS[@]}"; do
+        # shellcheck disable=SC2053 # Glob matching is intentional
         if [[ "$classname" == $pattern ]]; then
             return 1
         fi
