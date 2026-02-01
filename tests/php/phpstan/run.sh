@@ -14,9 +14,9 @@ for case_file in "$SCRIPT_DIR"/cases/*.sh; do
     [[ -f "$case_file" ]] || continue
 
     if "$case_file"; then
-        ((PASSED++))
+        ((PASSED++)) || true
     else
-        ((FAILED++))
+        ((FAILED++)) || true
     fi
 done
 

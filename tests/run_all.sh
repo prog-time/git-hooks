@@ -23,9 +23,9 @@ for suite in $(find "$SCRIPT_DIR" -mindepth 2 -name "run.sh" | sort); do
     echo "--- Suite: $suite_name ---"
 
     if "$suite"; then
-        ((PASSED++))
+        ((PASSED++)) || true
     else
-        ((FAILED++))
+        ((FAILED++)) || true
         FAILED_TESTS+=("$suite_name")
     fi
     echo ""
