@@ -1,4 +1,10 @@
 #!/bin/bash
+# ------------------------------------------------------------------------------
+# Runs Laravel Pint code style checker on PHP files.
+# Accepts list of file paths as arguments, filters only .php files.
+# Auto-fixes style issues and stages corrected files for commit.
+# Always exits with 0 (non-blocking hook).
+# ------------------------------------------------------------------------------
 
 if [ $# -eq 0 ]; then
     echo "[Pint] No PHP files to check."
