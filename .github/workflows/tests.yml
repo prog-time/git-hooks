@@ -41,6 +41,7 @@ jobs:
       - name: Prepare test environment
         run: |
           chmod +x php/*.sh
+          chmod +x python/*.sh
           chmod +x php/laravel/*.sh 2>/dev/null || true
           chmod +x shell/*.sh 2>/dev/null || true
           chmod +x docker/*.sh 2>/dev/null || true
