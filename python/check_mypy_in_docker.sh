@@ -21,7 +21,7 @@ check_container_running() {
 
 to_container_path() {
     local file="$1"
-    echo "$file" | sed "s|^${HOST_APP_PATH}|${CONTAINER_APP_PATH}|"
+    echo "${file/#${HOST_APP_PATH}/${CONTAINER_APP_PATH}}"
 }
 
 if [ $# -eq 0 ]; then
@@ -75,7 +75,7 @@ if [ $EXIT_CODE -ne 0 ]; then
     echo "----------------------------------------"
     echo "ERROR: Static analysis failed!"
     echo "----------------------------------------"
-    echo "$OUTPUT" | sed "s|${CONTAINER_APP_PATH}|${HOST_APP_PATH}|g"
+    echo "${OUTPUT//${CONTAINER_APP_PATH}/${HOST_APP_PATH}}"
     echo "----------------------------------------"
     echo "Total files checked: ${#PY_FILES[@]}"
     exit 1

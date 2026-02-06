@@ -34,7 +34,7 @@ check_container_running() {
 to_container_path() {
     local file="$1"
     # Replace app/ with /app/
-    echo "$file" | sed "s|^${HOST_APP_PATH}|${CONTAINER_APP_PATH}|"
+    echo "${file/#${HOST_APP_PATH}/${CONTAINER_APP_PATH}}"
 }
 
 # -----------------------------
@@ -91,7 +91,7 @@ for file in "${PY_FILES[@]}"; do
         HAS_ERRORS=1
         echo "Style errors in: $file"
         # Convert container paths back to host paths in output
-        echo "$OUTPUT" | sed "s|${CONTAINER_APP_PATH}|${HOST_APP_PATH}|g"
+        echo "${OUTPUT//${CONTAINER_APP_PATH}/${HOST_APP_PATH}}"
         echo ""
     fi
 done
