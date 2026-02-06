@@ -120,6 +120,91 @@ EOF
     chmod +x "$TEST_DIR/vendor/bin/pint"
 }
 
+mock_flake8() {
+    local exit_code="$1"
+    local output="${2:-}"
+
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/flake8" << EOF
+#!/bin/bash
+echo "$output"
+exit $exit_code
+EOF
+    chmod +x "$TEST_DIR/bin/flake8"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+mock_mypy() {
+    local exit_code="$1"
+    local output="${2:-}"
+
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/mypy" << EOF
+#!/bin/bash
+echo "$output"
+exit $exit_code
+EOF
+    chmod +x "$TEST_DIR/bin/mypy"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+mock_pytest_cmd() {
+    local exit_code="$1"
+    local output="${2:-}"
+
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/pytest" << EOF
+#!/bin/bash
+echo "$output"
+exit $exit_code
+EOF
+    chmod +x "$TEST_DIR/bin/pytest"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+mock_docker_running() {
+    local exec_exit_code="${1:-0}"
+    local exec_output="${2:-}"
+
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/docker" << EOF
+#!/bin/bash
+if [[ "\$1" == "ps" ]]; then
+    echo "app_dev"
+elif [[ "\$1" == "exec" ]]; then
+    echo "$exec_output"
+    exit $exec_exit_code
+fi
+exit 0
+EOF
+    chmod +x "$TEST_DIR/bin/docker"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+mock_docker_stopped() {
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/docker" << 'EOF'
+#!/bin/bash
+if [[ "$1" == "ps" ]]; then
+    echo ""
+fi
+exit 0
+EOF
+    chmod +x "$TEST_DIR/bin/docker"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+create_python_fixture() {
+    local path="$1"
+    local class_name="${2:-MyClass}"
+
+    mkdir -p "$(dirname "$path")"
+    cat > "$path" << EOF
+class $class_name:
+    pass
+EOF
+}
+
 mock_git_branch() {
     local branch_name="$1"
 
