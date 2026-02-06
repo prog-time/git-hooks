@@ -1,11 +1,19 @@
 #!/bin/bash
+# ----------------------------------------
+# Python Code Style Checker
+#
+# This script checks Python files for style
+# issues using flake8. It runs directly on
+# the host (no Docker required).
+#
+# Usage:
+#   ./check_style.sh file1.py file2.py ...
+# ----------------------------------------
 
 # -----------------------------
 # CONFIG
 # -----------------------------
-CONTAINER_NAME="fastapi_app_dev"
-LINTER_CMD="flake8"
-LINTER_OPTIONS="--max-line-length=120"
+CONTAINER_NAME="app_dev"
 
 # Path mapping: host path prefix -> container path prefix
 HOST_APP_PATH="app/"
@@ -76,7 +84,7 @@ for file in "${PY_FILES[@]}"; do
     container_path=$(to_container_path "$file")
 
     # Run linter inside container
-    OUTPUT=$(docker exec "$CONTAINER_NAME" $LINTER_CMD $LINTER_OPTIONS "$container_path" 2>&1)
+    OUTPUT=$(docker exec "$CONTAINER_NAME" flake8 --max-line-length=120 "$container_path" 2>&1)
     EXIT_CODE=$?
 
     if [ $EXIT_CODE -ne 0 ]; then
