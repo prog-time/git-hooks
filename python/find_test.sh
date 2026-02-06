@@ -1,12 +1,15 @@
 #!/bin/bash
-
-# -----------------------------
-# FUNCTIONS
-# -----------------------------
+# ------------------------------------------------------------------
+# Checks test files for services in app/services.
 # Rules:
-# - check only services: app/services/**/*.py
-# - 1 service = 1 test file
-# - mirror path relative to app/: app/.../x.py -> tests/.../test_x.py
+#   - Only checks files in app/services/**/*.py
+#   - Each service must have exactly one test file
+#   - Test file mirrors the path relative to app/:
+#     app/services/.../x.py -> tests/services/.../test_x.py
+# Usage:
+#   ./check_service_tests.sh <file1.py> <file2.py> ...
+# ------------------------------------------------------------------
+
 get_test_path() {
     local file="$1"
 
@@ -30,20 +33,15 @@ get_test_path() {
         return
     fi
 
-    # Remove app/ prefix and mirror into tests/
-    local relative="${file#app/}"         # services/...
+    local relative="${file#app/}"
     local dir
-    dir=$(dirname "$relative")            # services[/...]
-
+    dir=$(dirname "$relative")
     local test_filename="test_${filename}"
     local test_path="tests/${dir}/${test_filename}"
 
     echo "$test_path"
 }
 
-# -----------------------------
-# MAIN
-# -----------------------------
 if [ $# -eq 0 ]; then
     echo "No files to check"
     exit 0
@@ -59,12 +57,6 @@ for file in "$@"; do
         continue
     fi
 
-    # Skip files under tests/
-    if [[ "$file" == tests/* ]]; then
-        continue
-    fi
-
-    # Compute expected test path
     test_path=$(get_test_path "$file")
 
     if [ -z "$test_path" ]; then
@@ -104,11 +96,9 @@ done
 # Report results
 if [ ${#MISSING_TESTS[@]} -gt 0 ]; then
     echo "ERROR: Missing tests for the following services:"
-    echo ""
     for missing in "${MISSING_TESTS[@]}"; do
         echo "  - $missing"
     done
-    echo ""
     echo "Total files checked: $CHECKED_FILES"
     echo "Missing tests: ${#MISSING_TESTS[@]}"
     exit 1
@@ -116,11 +106,9 @@ fi
 
 if [ ${#DUPLICATE_TESTS[@]} -gt 0 ]; then
     echo "ERROR: '1 service = 1 test file' rule violated (duplicates found):"
-    echo ""
     for dup in "${DUPLICATE_TESTS[@]}"; do
         echo "  - $dup"
     done
-    echo ""
     echo "Total files checked: $CHECKED_FILES"
     echo "Duplicate groups: ${#DUPLICATE_TESTS[@]}"
     exit 1
