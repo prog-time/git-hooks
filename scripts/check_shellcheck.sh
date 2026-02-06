@@ -1,7 +1,7 @@
 #!/bin/bash
 # ------------------------------------------------------------------------------
 # Runs ShellCheck locally on shell scripts provided as arguments.
-# Reports warnings and errors using ShellCheck severity level "warning".
+# Reports warnings and errors using ShellCheck.
 # Fails if any script contains issues.
 # ------------------------------------------------------------------------------
 
@@ -30,9 +30,9 @@ check_file() {
     echo "Checking $FILE..."
 
     if [[ -n "$EXCLUDE_STRING" ]]; then
-        shellcheck --severity=warning --exclude="$EXCLUDE_STRING" "$FILE" || ERROR_FOUND=1
+        shellcheck --exclude="$EXCLUDE_STRING" "$FILE" || ERROR_FOUND=1
     else
-        shellcheck --severity=warning "$FILE" || ERROR_FOUND=1
+        shellcheck "$FILE" || ERROR_FOUND=1
     fi
 }
 
