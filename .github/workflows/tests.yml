@@ -66,3 +66,22 @@ jobs:
       - name: Run Python tests
         run: |
           for suite in tests/python/*/run.sh; do "$suite"; done
+
+  javascript-tests:
+    name: JavaScript Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare test environment
+        run: |
+          chmod +x javascript/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/javascript -name "*.sh" -exec chmod +x {} +
+
+      - name: Run JavaScript tests
+        run: |
+          for suite in tests/javascript/*/run.sh; do "$suite"; done

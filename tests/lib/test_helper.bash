@@ -212,6 +212,20 @@ mock_git_branch() {
     git -C "$TEST_DIR" checkout -q "$branch_name" 2>/dev/null || true
 }
 
+mock_npx() {
+    local exit_code="$1"
+    local output="${2:-}"
+
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/npx" << EOF
+#!/bin/bash
+echo "$output"
+exit $exit_code
+EOF
+    chmod +x "$TEST_DIR/bin/npx"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
 mock_docker_compose() {
     mkdir -p "$TEST_DIR/bin"
     cat > "$TEST_DIR/bin/docker" << 'EOF'
@@ -251,6 +265,40 @@ run_hook() {
     # Run hook and capture output
     set +e
     LAST_OUTPUT=$("$full_hook_path" "${args[@]}" 2>&1)
+    LAST_EXIT_CODE=$?
+    set -e
+}
+
+run_hook_at_depth() {
+    local hook_path="$1"
+    local depth="$2"
+    shift 2
+    local args=("$@")
+
+    # Get absolute path to hook
+    local script_dir
+    script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+    local full_hook_path="$script_dir/$hook_path"
+
+    if [[ ! -f "$full_hook_path" ]]; then
+        echo -e "${RED}[ERROR]${NC} Hook not found: $full_hook_path"
+        return 1
+    fi
+
+    # Build nested directory path inside TEST_DIR
+    local nested_dir="$TEST_DIR"
+    for ((i = 0; i < depth; i++)); do
+        nested_dir="$nested_dir/level_$i"
+    done
+    mkdir -p "$nested_dir"
+
+    # Copy hook script into nested directory
+    cp "$full_hook_path" "$nested_dir/hook.sh"
+    chmod +x "$nested_dir/hook.sh"
+
+    # Run hook and capture output
+    set +e
+    LAST_OUTPUT=$("$nested_dir/hook.sh" "${args[@]}" 2>&1)
     LAST_EXIT_CODE=$?
     set -e
 }
