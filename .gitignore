@@ -22,3 +22,5 @@ tests/**/tmp/
 
 # Logs
 *.log
+
+articles/
