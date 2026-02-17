@@ -16,7 +16,7 @@ create_fixture "app/index.html" "<html><body></body></html>"
 REPO_DIR="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 cp "$REPO_DIR/html/check_htmlhint.sh" "$TEST_DIR/check_htmlhint.sh"
 cp "$REPO_DIR/html/check_htmlhint_all.sh" "$TEST_DIR/check_htmlhint_all.sh"
-sed -i '' "s|PROJECT_DIR=.*|PROJECT_DIR=\"$TEST_DIR\"|" "$TEST_DIR/check_htmlhint_all.sh"
+sed -i.bak "s|PROJECT_DIR=.*|PROJECT_DIR=\"$TEST_DIR\"|" "$TEST_DIR/check_htmlhint_all.sh" && rm -f "$TEST_DIR/check_htmlhint_all.sh.bak"
 chmod +x "$TEST_DIR/check_htmlhint.sh" "$TEST_DIR/check_htmlhint_all.sh"
 
 set +e

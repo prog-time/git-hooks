@@ -16,7 +16,7 @@ create_fixture "docs/README.md" "# Hello World"
 REPO_DIR="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 cp "$REPO_DIR/markdown/check_markdownlint.sh" "$TEST_DIR/check_markdownlint.sh"
 cp "$REPO_DIR/markdown/check_markdownlint_all.sh" "$TEST_DIR/check_markdownlint_all.sh"
-sed -i '' "s|PROJECT_DIR=.*|PROJECT_DIR=\"$TEST_DIR\"|" "$TEST_DIR/check_markdownlint_all.sh"
+sed -i.bak "s|PROJECT_DIR=.*|PROJECT_DIR=\"$TEST_DIR\"|" "$TEST_DIR/check_markdownlint_all.sh" && rm -f "$TEST_DIR/check_markdownlint_all.sh.bak"
 chmod +x "$TEST_DIR/check_markdownlint.sh" "$TEST_DIR/check_markdownlint_all.sh"
 
 set +e

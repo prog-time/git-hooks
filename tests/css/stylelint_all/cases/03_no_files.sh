@@ -13,7 +13,7 @@ setup_test_env "stylelint_all_no_files"
 REPO_DIR="$(cd "$SCRIPT_DIR/../../../.." && pwd)"
 cp "$REPO_DIR/css/check_stylelint.sh" "$TEST_DIR/check_stylelint.sh"
 cp "$REPO_DIR/css/check_stylelint_all.sh" "$TEST_DIR/check_stylelint_all.sh"
-sed -i '' "s|PROJECT_DIR=.*|PROJECT_DIR=\"$TEST_DIR\"|" "$TEST_DIR/check_stylelint_all.sh"
+sed -i.bak "s|PROJECT_DIR=.*|PROJECT_DIR=\"$TEST_DIR\"|" "$TEST_DIR/check_stylelint_all.sh" && rm -f "$TEST_DIR/check_stylelint_all.sh.bak"
 chmod +x "$TEST_DIR/check_stylelint.sh" "$TEST_DIR/check_stylelint_all.sh"
 
 set +e
