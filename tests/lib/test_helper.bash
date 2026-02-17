@@ -226,6 +226,34 @@ EOF
     export PATH="$TEST_DIR/bin:$PATH"
 }
 
+mock_markdownlint() {
+    local exit_code="$1"
+    local output="${2:-}"
+
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/markdownlint" << EOF
+#!/bin/bash
+echo "$output"
+exit $exit_code
+EOF
+    chmod +x "$TEST_DIR/bin/markdownlint"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
+mock_yamllint() {
+    local exit_code="$1"
+    local output="${2:-}"
+
+    mkdir -p "$TEST_DIR/bin"
+    cat > "$TEST_DIR/bin/yamllint" << EOF
+#!/bin/bash
+echo "$output"
+exit $exit_code
+EOF
+    chmod +x "$TEST_DIR/bin/yamllint"
+    export PATH="$TEST_DIR/bin:$PATH"
+}
+
 mock_docker_compose() {
     mkdir -p "$TEST_DIR/bin"
     cat > "$TEST_DIR/bin/docker" << 'EOF'
