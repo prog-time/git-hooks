@@ -85,3 +85,79 @@ jobs:
       - name: Run JavaScript tests
         run: |
           for suite in tests/javascript/*/run.sh; do "$suite"; done
+
+  css-tests:
+    name: CSS Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare test environment
+        run: |
+          chmod +x css/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/css -name "*.sh" -exec chmod +x {} +
+
+      - name: Run CSS tests
+        run: |
+          for suite in tests/css/*/run.sh; do "$suite"; done
+
+  html-tests:
+    name: HTML Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare test environment
+        run: |
+          chmod +x html/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/html -name "*.sh" -exec chmod +x {} +
+
+      - name: Run HTML tests
+        run: |
+          for suite in tests/html/*/run.sh; do "$suite"; done
+
+  markdown-tests:
+    name: Markdown Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare test environment
+        run: |
+          chmod +x markdown/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/markdown -name "*.sh" -exec chmod +x {} +
+
+      - name: Run Markdown tests
+        run: |
+          for suite in tests/markdown/*/run.sh; do "$suite"; done
+
+  yml-tests:
+    name: YAML Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare test environment
+        run: |
+          chmod +x yml/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/yml -name "*.sh" -exec chmod +x {} +
+
+      - name: Run YAML tests
+        run: |
+          for suite in tests/yml/*/run.sh; do "$suite"; done
