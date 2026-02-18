@@ -7,6 +7,10 @@ A collection of reusable git hook scripts for automating code quality checks and
 - **JavaScript/TypeScript**: ESLint, Prettier, TypeScript type checking, Vitest test runner, test existence validation
 - **Python**: Flake8 linting, Mypy static analysis, Pytest runner, service test validation (local and Docker modes)
 - **PHP/Laravel**: PHPStan analysis with progressive error reduction, Pint code style fixing, test coverage validation
+- **CSS/SCSS/Less**: Stylelint code style validation
+- **HTML**: HTMLHint linting
+- **Markdown**: markdownlint style validation
+- **YAML**: yamllint style validation
 - **Docker**: Dockerfile linting with Hadolint
 - **Shell**: Script validation with ShellCheck
 - **Git**: Branch naming conventions, automatic task ID injection in commits
@@ -54,6 +58,34 @@ A collection of reusable git hook scripts for automating code quality checks and
 | `php/laravel/check_pint.sh` | Runs Laravel Pint, auto-fixes code style issues, and stages corrected files. |
 | `php/find_test.sh` | Validates that modified PHP classes have corresponding unit tests. |
 | `php/start_test_in_docker.sh` | Runs PHPUnit tests inside Docker for modified files. |
+
+### CSS / SCSS / Less
+
+| Script | Description |
+|--------|-------------|
+| `css/check_stylelint.sh` | Runs Stylelint on staged CSS/SCSS/Less files passed as arguments. |
+| `css/check_stylelint_all.sh` | Runs Stylelint on all CSS/SCSS/Less files in the project. Used in pre-push hooks. |
+
+### HTML
+
+| Script | Description |
+|--------|-------------|
+| `html/check_htmlhint.sh` | Runs HTMLHint on staged HTML files passed as arguments. |
+| `html/check_htmlhint_all.sh` | Runs HTMLHint on all HTML files in the project. Used in pre-push hooks. |
+
+### Markdown
+
+| Script | Description |
+|--------|-------------|
+| `markdown/check_markdownlint.sh` | Runs markdownlint on staged `.md` files passed as arguments. |
+| `markdown/check_markdownlint_all.sh` | Runs markdownlint on all `.md` files in the project. Used in pre-push hooks. |
+
+### YAML
+
+| Script | Description |
+|--------|-------------|
+| `yml/check_yamllint.sh` | Runs yamllint on staged `.yml`/`.yaml` files passed as arguments. |
+| `yml/check_yamllint_all.sh` | Runs yamllint on all `.yml`/`.yaml` files in the project. Used in pre-push hooks. |
 
 ### Git Workflow
 
@@ -138,6 +170,46 @@ A collection of reusable git hook scripts for automating code quality checks and
 ./php/check_phpstan.sh strict src/Service.php
 ```
 
+### CSS / SCSS / Less
+
+```bash
+# Check staged files
+./css/check_stylelint.sh styles/main.css components/button.scss
+
+# Check all files in the project
+./css/check_stylelint_all.sh
+```
+
+### HTML
+
+```bash
+# Check staged files
+./html/check_htmlhint.sh templates/index.html templates/layout.html
+
+# Check all files in the project
+./html/check_htmlhint_all.sh
+```
+
+### Markdown
+
+```bash
+# Check staged files
+./markdown/check_markdownlint.sh README.md docs/guide.md
+
+# Check all files in the project
+./markdown/check_markdownlint_all.sh
+```
+
+### YAML
+
+```bash
+# Check staged files
+./yml/check_yamllint.sh .github/workflows/ci.yml docker-compose.yml
+
+# Check all files in the project
+./yml/check_yamllint_all.sh
+```
+
 ### Branch Name Validation
 
 ```bash
@@ -188,6 +260,18 @@ bash python/find_test.sh $FILES
 PHP_FILES=$(echo "$FILES" | grep '\.php$' || true)
 [[ -n "$PHP_FILES" ]] && bash php/check_phpstan.sh default $PHP_FILES
 
+# CSS/SCSS/Less
+bash css/check_stylelint.sh $FILES
+
+# HTML
+bash html/check_htmlhint.sh $FILES
+
+# Markdown
+bash markdown/check_markdownlint.sh $FILES
+
+# YAML
+bash yml/check_yamllint.sh $FILES
+
 # Shell
 SH_FILES=$(echo "$FILES" | grep '\.sh$' || true)
 [[ -n "$SH_FILES" ]] && bash scripts/check_shellcheck.sh $SH_FILES
@@ -207,6 +291,14 @@ SH_FILES=$(echo "$FILES" | grep '\.sh$' || true)
 ./tests/python/flake8/run.sh
 ./tests/python/mypy/run.sh
 ./tests/python/find_test/run.sh
+./tests/css/stylelint/run.sh
+./tests/css/stylelint_all/run.sh
+./tests/html/htmlhint/run.sh
+./tests/html/htmlhint_all/run.sh
+./tests/markdown/markdownlint/run.sh
+./tests/markdown/markdownlint_all/run.sh
+./tests/yml/yamllint/run.sh
+./tests/yml/yamllint_all/run.sh
 ```
 
 ## Requirements
@@ -214,9 +306,13 @@ SH_FILES=$(echo "$FILES" | grep '\.sh$' || true)
 - Bash 4.0+
 - Git
 - jq
-- Node.js with npx (for JavaScript/TypeScript hooks)
+- Node.js with npx (for JavaScript/TypeScript, CSS, HTML hooks)
 - Python 3, Flake8, Mypy, Pytest (for Python hooks)
 - PHP 8.1+ with Composer (for PHP hooks)
+- Stylelint (`npm install -g stylelint`) or via `npx`
+- HTMLHint (`npm install -g htmlhint`) or via `npx`
+- markdownlint-cli (`npm install -g markdownlint-cli`)
+- yamllint (`pip install yamllint` or system package)
 - Docker (optional, for Docker-based hooks)
 - ShellCheck (for shell validation)
 
