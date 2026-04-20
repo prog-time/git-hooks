@@ -23,6 +23,7 @@ PROMPT="git-agent desc commit en $STAGED_FILES"
 COMMIT_TEXT=$(printf "%s\n" "$PROMPT" | claude -p)
 
 # Remove possible triple backticks ``` and empty lines
+# shellcheck disable=SC2016
 COMMIT_TEXT=$(echo "$COMMIT_TEXT" | sed 's/^```//; s/```$//' | sed '/^$/d')
 
 # Exit if the generated text is empty
