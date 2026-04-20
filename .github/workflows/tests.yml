@@ -57,6 +57,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Install Python tools
+        run: pip install ruff
+
       - name: Prepare test environment
         run: |
           chmod +x python/*.sh
@@ -161,3 +164,68 @@ jobs:
       - name: Run YAML tests
         run: |
           for suite in tests/yml/*/run.sh; do "$suite"; done
+
+  simple-tests:
+    name: Simple Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install codespell
+        run: pip install codespell
+
+      - name: Prepare test environment
+        run: |
+          chmod +x simple/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/simple -name "*.sh" -exec chmod +x {} +
+
+      - name: Run Simple tests
+        run: |
+          for suite in tests/simple/*/run.sh; do "$suite"; done
+
+  git-tests:
+    name: Git Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Prepare test environment
+        run: |
+          chmod +x git/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/git -name "*.sh" -exec chmod +x {} +
+
+      - name: Run Git tests
+        run: |
+          for suite in tests/git/*/run.sh; do "$suite"; done
+
+  shell-tests:
+    name: Shell Tests
+    runs-on: ubuntu-latest
+    needs: shellcheck
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install shfmt
+        run: |
+          curl -sS https://webi.sh/shfmt | sh
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Prepare test environment
+        run: |
+          chmod +x shell/*.sh
+          chmod +x tests/lib/*.bash
+          find tests/shell -name "*.sh" -exec chmod +x {} +
+
+      - name: Run Shell tests
+        run: |
+          for suite in tests/shell/*/run.sh; do "$suite"; done
