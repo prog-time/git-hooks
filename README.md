@@ -5,15 +5,16 @@ A collection of reusable git hook scripts for automating code quality checks and
 ## Features
 
 - **JavaScript/TypeScript**: ESLint, Prettier, TypeScript type checking, Vitest test runner, test existence validation
-- **Python**: Flake8 linting, Mypy static analysis, Pytest runner, service test validation (local and Docker modes)
+- **Python**: Flake8 linting, Mypy static analysis, Ruff linting, Pytest runner, service test validation (local and Docker modes)
 - **PHP/Laravel**: PHPStan analysis with progressive error reduction, Pint code style fixing, test coverage validation
 - **CSS/SCSS/Less**: Stylelint code style validation
 - **HTML**: HTMLHint linting
 - **Markdown**: markdownlint style validation
 - **YAML**: yamllint style validation
 - **Docker**: Dockerfile linting with Hadolint
-- **Shell**: Script validation with ShellCheck
-- **Git**: Branch naming conventions, automatic task ID injection in commits
+- **Shell**: Script validation with ShellCheck, shfmt formatting check
+- **Git**: Branch naming conventions, automatic task ID injection in commits, secret detection with gitleaks
+- **Simple**: Spelling check with codespell, JSON syntax validation
 
 ## Quick Start
 
@@ -48,6 +49,8 @@ A collection of reusable git hook scripts for automating code quality checks and
 | `python/check_mypy_in_docker.sh` | Runs Mypy inside the Docker container, maps host/container paths. |
 | `python/check_pytest.sh` | Runs the full Pytest suite locally with `PYTHONPATH=./app`. |
 | `python/check_pytest_in_docker.sh` | Runs Pytest inside the Docker container, converts container paths to host paths. |
+| `python/check_ruff.sh` | Runs Ruff linter on staged Python files passed as arguments. |
+| `python/check_ruff_all.sh` | Runs Ruff linter on all Python files in the project. |
 | `python/find_test.sh` | Validates that each service in `app/services/` has exactly one corresponding test file. |
 
 ### PHP
@@ -92,6 +95,8 @@ A collection of reusable git hook scripts for automating code quality checks and
 | Script | Description |
 |--------|-------------|
 | `git/check_branch_name.sh` | Validates branch names match pattern: `{type}/{task-id}_{description}` |
+| `git/check_gitleaks.sh` | Scans staged changes for secrets using gitleaks (optional; exits 0 if not installed). |
+| `git/check_gitleaks_all.sh` | Scans full repository history for secrets using gitleaks. |
 | `git/preparations/add_task_id_in_commit.sh` | Prepends task ID from branch name to commit message. |
 | `git/preparations/prepare-commit-description.sh` | Appends list of changed files to commit message. |
 
@@ -106,7 +111,18 @@ A collection of reusable git hook scripts for automating code quality checks and
 | Script | Description |
 |--------|-------------|
 | `shell/check_shellcheck.sh` | Validates shell scripts using ShellCheck (via Docker). |
+| `shell/check_shfmt.sh` | Checks shell script formatting using shfmt (`-i 2 -ci`). |
+| `shell/check_shfmt_all.sh` | Checks formatting of all `.sh` files in the project. |
 | `scripts/check_shellcheck.sh` | Validates shell scripts using ShellCheck (local). |
+
+### Simple
+
+| Script | Description |
+|--------|-------------|
+| `simple/check_codespell.sh` | Checks files for spelling mistakes using codespell. |
+| `simple/check_codespell_all.sh` | Checks all project files for spelling mistakes. |
+| `simple/check_json_validate.sh` | Validates JSON files for syntax correctness using `python3 -m json.tool`. |
+| `simple/check_json_validate_all.sh` | Validates all `*.json` files in the project. |
 
 ## Usage Examples
 
@@ -210,6 +226,56 @@ A collection of reusable git hook scripts for automating code quality checks and
 ./yml/check_yamllint_all.sh
 ```
 
+### Ruff
+
+```bash
+# Check staged files
+./python/check_ruff.sh app/services/user.py app/models/auth.py
+
+# Check all Python files in the project
+./python/check_ruff_all.sh
+```
+
+### Gitleaks
+
+```bash
+# Check staged changes for secrets (optional: exits 0 if gitleaks not installed)
+./git/check_gitleaks.sh
+
+# Scan full repository history for secrets
+./git/check_gitleaks_all.sh
+```
+
+### shfmt
+
+```bash
+# Check staged shell scripts for formatting
+./shell/check_shfmt.sh deploy.sh scripts/setup.sh
+
+# Check all shell scripts in the project
+./shell/check_shfmt_all.sh
+```
+
+### Codespell
+
+```bash
+# Check specific files for spelling mistakes
+./simple/check_codespell.sh README.md src/utils.py
+
+# Check all project files
+./simple/check_codespell_all.sh
+```
+
+### JSON Validation
+
+```bash
+# Validate specific JSON files
+./simple/check_json_validate.sh package.json .eslintrc.json
+
+# Validate all JSON files in the project
+./simple/check_json_validate_all.sh
+```
+
 ### Branch Name Validation
 
 ```bash
@@ -290,6 +356,7 @@ SH_FILES=$(echo "$FILES" | grep '\.sh$' || true)
 ./tests/javascript/vitest/run.sh
 ./tests/python/flake8/run.sh
 ./tests/python/mypy/run.sh
+./tests/python/ruff/run.sh
 ./tests/python/find_test/run.sh
 ./tests/css/stylelint/run.sh
 ./tests/css/stylelint_all/run.sh
@@ -299,6 +366,10 @@ SH_FILES=$(echo "$FILES" | grep '\.sh$' || true)
 ./tests/markdown/markdownlint_all/run.sh
 ./tests/yml/yamllint/run.sh
 ./tests/yml/yamllint_all/run.sh
+./tests/git/gitleaks/run.sh
+./tests/shell/shfmt/run.sh
+./tests/simple/codespell/run.sh
+./tests/simple/json_validate/run.sh
 ```
 
 ## Requirements
@@ -308,11 +379,15 @@ SH_FILES=$(echo "$FILES" | grep '\.sh$' || true)
 - jq
 - Node.js with npx (for JavaScript/TypeScript, CSS, HTML hooks)
 - Python 3, Flake8, Mypy, Pytest (for Python hooks)
+- Ruff (`pip install ruff`) for `python/check_ruff.sh`
+- Codespell (`pip install codespell`) for `simple/check_codespell.sh`
 - PHP 8.1+ with Composer (for PHP hooks)
 - Stylelint (`npm install -g stylelint`) or via `npx`
 - HTMLHint (`npm install -g htmlhint`) or via `npx`
 - markdownlint-cli (`npm install -g markdownlint-cli`)
 - yamllint (`pip install yamllint` or system package)
+- shfmt (`go install mvdan.cc/sh/v3/cmd/shfmt@latest` or `brew install shfmt`) for `shell/check_shfmt.sh`
+- gitleaks (optional, see [install guide](https://github.com/gitleaks/gitleaks#installing)) for `git/check_gitleaks.sh`
 - Docker (optional, for Docker-based hooks)
 - ShellCheck (for shell validation)
 
